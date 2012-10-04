@@ -29,11 +29,9 @@ class SnifterWrapper
     return if running?
     id, upstream, port = self.id, self.upstream, self.port
     self.pid = fork do
-      Dir.chdir File.expand_path('../snifter', File.dirname(__FILE__)) do
-        @command =  ['ruby', '-I', '.', 'server.rb', id, port, upstream]
-        puts @command.join(' ')
-        exec(*@command)
-      end
+      @command =  ['./script/snifter', id, port, upstream]
+      puts @command.join(' ')
+      exec(*@command)
     end
     puts "Snifter #{id}[#{pid}] started."
   end
@@ -47,7 +45,8 @@ class SnifterWrapper
   end
 
   def destroy!
-    # todo
+    stop!
+    # todo -- wipe other data
   end
 
   def self.for_pid redis, pid
