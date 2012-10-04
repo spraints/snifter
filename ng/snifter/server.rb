@@ -1,0 +1,42 @@
+require 'bundler/setup'
+require 'em-proxy'
+
+require 'snifter'
+require 'pp'
+
+snifter_id = ARGV.shift
+from_port = ARGV.shift.to_i
+host_to, to_port = ARGV.shift.split(/:/)
+host_to, to_port = '127.0.0.1', host_to if to_port.nil?
+to_port = to_port.to_i
+
+puts "Proxying from #{from_port} to #{host_to}:#{to_port}"
+
+$snifter = Snifter.new snifter_id
+
+$sessions = {}
+
+Proxy.start(:host => "0.0.0.0", :port => from_port, :debug => false) do |conn|
+  conn.server :srv, :host => host_to, :port => to_port
+
+  # modify / process request stream
+  conn.on_data do |data|
+    if id = $sessions[conn.object_id]
+      id = conn.object_id.to_s + rand(1000).to_s
+      $sessions[conn.object_id] = id
+    else
+      id = $sessions[conn.object_id] = conn.object_id
+    end
+    $snifter.log_connect(id)
+    $snifter.log_data(id, data)
+    data
+  end
+
+  # modify / process response stream
+  conn.on_response do |backend, resp|
+    id = $sessions[conn.object_id]
+    $snifter.log_response(id, backend, resp)
+    resp
+  end
+
+end

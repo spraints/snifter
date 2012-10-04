@@ -1,0 +1,27 @@
+<div class="snifter-list">
+  <h3>Snifters</h3>
+  <ul>
+    <% $snifters.each do |snifter| %>
+      <li>
+        <a href="/<%= snifter.id %>"><%=h snifter.id %> <%=h snifter.port %> -&gt; <%=h snifter.upstream %></a>
+        <%= erb :_snifter_status, :locals => { :snifter => snifter } %>
+        (<form method="post" action="/<%= snifter.id %>"><input type="hidden" name="_method" value="delete" /><input type="submit" value="destroy" /></form>)
+      </li>
+    <% end %>
+  </ul>
+</div>
+<button class="revealer" data-target="#new-snifter-form">New</button>
+<div id="new-snifter-form" style="display:none">
+  <form method="post" action="/snifter">
+    <input type="text" name="snifter_id" placeholder="Proxy ID (must be unique)" />
+    <br />
+    <input type="text" name="snifter[upstream]" placeholder="upstream port or host:port" />
+    <br />
+    <input type="number" name="snifter[port]" placeholder="proxy port" />
+    <br />
+    <input id="snifter_start" type="checkbox" name="start" value="yes" />
+    <label for="snifter_start">Start this snifter</label>
+    <br />
+    <input type="submit" value="Create" />
+  </form>
+</div>

@@ -1,0 +1,5 @@
+<% if snifter.running? %>
+  (RUNNING[<%= snifter.pid %>]; <a href="/<%= snifter.id %>/stop">stop</a>)
+<% else %>
+  (<a href="/<%= snifter.id %>/start">run</a>; STOPPED)
+<% end %>

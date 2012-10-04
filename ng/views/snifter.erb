@@ -1,0 +1,9 @@
+<h3><%= @snifter.id %></h3>
+
+<ul class="snifter-props">
+  <li><em>From</em> <%= @snifter.port %></li>
+  <li><em>To</em> <%= @snifter.upstream %></li>
+  <li><%= erb :_snifter_status, :locals => { :snifter => @snifter } %></li>
+</ul>
+
+<%#= erb :_request_list, :locals => { :requests => @snifter.requests(:limit => 20) } %>
