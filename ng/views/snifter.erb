@@ -1,9 +1,55 @@
-<h3><%= @snifter.id %></h3>
+<h3><%= snifter.id %></h3>
 
 <ul class="snifter-props">
-  <li><em>From</em> <%= @snifter.port %></li>
-  <li><em>To</em> <%= @snifter.upstream %></li>
-  <li><%= erb :_snifter_status, :locals => { :snifter => @snifter } %></li>
+  <li><em>From</em> <%= snifter.port %></li>
+  <li><em>To</em> <%= snifter.upstream %></li>
+  <li><%= erb :_snifter_status, :locals => { :snifter => snifter } %></li>
 </ul>
 
-<%#= erb :_request_list, :locals => { :requests => @snifter.requests(:limit => 20) } %>
+<table>
+  <tr><td valign="top">
+      <h1>Sessions</h1>
+    <form>
+    <input type="textbox" id="session_name">
+    <input id="create_session" type="button" value="Save Session">
+    <table>
+    <% last_time = 0 %>
+    <% snifter.sessions.each do |sess, req, res, time| %>
+      <% if (time - last_time) > 3 %>
+        <tr><td colspan="3"><hr/></td></tr>
+      <% end %>
+      <% last_time = time %>
+      <tr>
+        <td nowrap><input class="check" value="<%= sess %>" type="checkbox"/></td>
+        <td nowrap><a class="session" href="#" rel="/<%= snifter.id %>/<%= sess %>"><%= req %></a></td>
+        <td nowrap><%= res %></td>
+      </tr>
+    <% end %>
+    </table>
+    </form>
+  </td><td valign="top">
+    <h1>Results</h1>
+    <div id="results"></div>
+  </td></tr>
+</table>
+
+
+<script type="text/javascript">
+  $(function(){
+      $(".session").click(function() {
+        $("#results").load($(this).attr('rel'))
+      })
+
+      $("#create_session").click(function() {
+        var sessions = [];
+        var rows = $(this).parents('form').contents().find('input:checked')
+        rows.each(function(i, dom) {
+          sessions.push($(dom).attr("value"))
+          })
+        sess_name = $("#session_name").val()
+        $.post("/<%= snifter.id %>/create/" + sess_name, {"sessions": sessions}, function() {
+          alert('created')
+          })
+      })
+  })
+</script>

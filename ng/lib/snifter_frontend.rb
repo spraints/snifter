@@ -41,8 +41,8 @@ class SnifterFrontend < Sinatra::Base
   end
 
   get '/:snifter_id' do
-    @snifter = $snifters[params[:snifter_id]]
-    erb :snifter
+    snifter = $snifters[params[:snifter_id]]
+    erb :snifter, :locals => { :snifter => snifter }
   end
 
   get '/:snifter_id/start' do
@@ -53,6 +53,12 @@ class SnifterFrontend < Sinatra::Base
   get '/:snifter_id/stop' do
     $snifters[params[:snifter_id]].stop!
     redirect to('/')
+  end
+
+  get '/:snifter_id/:sess' do
+    snifter = $snifters[params[:snifter_id]]
+    req, res = snifter.session(params[:sess])
+    erb :session, :locals => { :req => req, :res => res }, :layout => false
   end
 
   #post '/:snifter_id/session' do

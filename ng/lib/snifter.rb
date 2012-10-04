@@ -2,39 +2,14 @@ require 'rubygems'
 require 'redis'
 
 class Snifter
-  def initialize snifter_id
+  def initialize snifter_id, redis = nil
     @snifter_id = snifter_id
-    @redis = Redis.new
-  end
-
-  def list_id
-    'snifter-conn-list-' + @snifter_id
-  end
-
-  def group_id
-    'snifter-conn-group-' + @snifter_id
-  end
-
-  def conn_id(conn)
-    'snifter-conn-' + @snifter_id + '-' + conn.to_s
-  end
-
-  def update_list(id)
-    @redis.rpush list_id, id
-    @redis.ltrim list_id, -30, -1
+    @redis = redis || Redis.new
   end
 
   def log_connect(conn)
     add_data(conn, 'time', Time.now.to_i)
     update_list(conn_id(conn))
-  end
-
-  def add_data(conn, type, data)
-    cid = conn_id(conn) + type
-    if predata = @redis.get(cid)
-      data = predata.to_s + data.to_s
-    end
-    @redis.set cid, data 
   end
 
   def log_data(conn, data)
@@ -94,5 +69,33 @@ class Snifter
       puts
     end
   end
+
+  private
+
+  def conn_id(conn)
+    'snifter-conn-' + @snifter_id + '-' + conn.to_s
+  end
+
+  def list_id
+    'snifter-conn-list-' + @snifter_id
+  end
+
+  def group_id
+    'snifter-conn-group-' + @snifter_id
+  end
+
+  def update_list(id)
+    @redis.rpush list_id, id
+    @redis.ltrim list_id, -30, -1
+  end
+
+  def add_data(conn, type, data)
+    cid = conn_id(conn) + type
+    if predata = @redis.get(cid)
+      data = predata.to_s + data.to_s
+    end
+    @redis.set cid, data 
+  end
+
 end
 

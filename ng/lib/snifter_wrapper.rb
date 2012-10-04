@@ -1,3 +1,8 @@
+require 'snifter'
+require 'coderay'
+require 'rexml/document'
+require 'nokogiri'
+
 class SnifterWrapper
   SNIFTER_PIDS = 'snifter-server-pids'
 
@@ -7,6 +12,19 @@ class SnifterWrapper
   end
 
   attr_reader :redis, :id
+
+  def sessions
+    _snifter.current.map { |sess|
+      req, res, time = _snifter.session(sess)
+      req = get_line(req)
+      res = get_line(res)
+      [sess, req, res, time]
+    }
+  end
+
+  def session sess
+    _snifter.session(sess).take(2).map { |o| process_http(o) }
+  end
 
   def upstream     ; read 'upstream'     ; end
   def upstream=(s) ; write 'upstream', s ; end
@@ -73,5 +91,63 @@ class SnifterWrapper
 
   def redis_key key
     "snifter:::#{id}:::#{key}"
+  end
+
+  def _snifter
+    @_snifter ||= Snifter.new id, redis
+  end
+
+  def get_line(data)
+    data.split("\n").first.gsub("HTTP/1.1", '')
+  rescue
+    'fu'
+  end
+
+  def process_http(req)
+    header, xml = req.split("\r\n\r\n")
+
+    headers = header.split("\r\n")
+    http = headers.shift
+    harr = headers.map { |h| h.split(': ') }
+
+    r = ""
+    begin
+      req = REXML::Document.new(xml)
+      req.write(r, 3)
+      div = CodeRay.scan(r, :xml).div
+    rescue
+      div = CodeRay.scan(xml, :xml).div
+    end
+
+    begin
+      n = Nokogiri.XML(r)
+      values = get_values([n.root.name], n.root, [])
+    rescue Object => e
+      puts e.message
+      values = []
+    end
+
+    { :headers => harr, :body => div, 
+      :header_raw => header, :body_raw => xml,
+      :http => http, :body_values => values
+    }
+  end
+
+  def get_values(context, node, values)
+    node.children.each do |a|
+      if a.element?
+        new_context = context + [a.name]
+        values = get_values(new_context, a, values)
+      else
+        data = a.content.strip
+        if !data.empty?
+          values << [context.join('.'), data]
+        end
+      end
+    end
+    if node.children.size == 0
+      values << [context.join('.'), node.name]
+    end
+    values
   end
 end
