@@ -29,22 +29,21 @@ class Snifter
   end
 
   def groups
-    @redis.lrange group_id, 0, -1;
+    @redis.lrange(group_list_id, 0, -1).map { |id| id.sub(group_id_prefix, '') }
   end
 
-  def get_group(group)
-    @redis.lrange group, 0, -1;
+  def get_group(group_name)
+    @redis.lrange group_id(group_name), 0, -1;
   end
 
   def clear_groups
-    @redis.ltrim group_id, -1, -1
+    @redis.ltrim group_list_id, -1, -1
   end
 
   def save_group(name, data)
-    time = rand(1000).to_s
-    name = 'snifter_group_' + name + '_' + time
+    name = group_id(name)
 
-    @redis.rpush group_id, name
+    @redis.rpush group_list_id, name
 
     data.each do |sess|
       puts "PUSH #{name} #{sess}"
@@ -57,6 +56,15 @@ class Snifter
     res = @redis.get session + 'response'
     time = @redis.get session + 'time'
     [req, res, time.to_i]
+  end
+
+  def clear_sessions
+    while session = @redis.lpop(list_id)
+      @redis.del session + 'request'
+      @redis.del session + 'response'
+      @redis.del session + 'time'
+    end
+    true
   end
 
   def show_stats
@@ -80,8 +88,16 @@ class Snifter
     'snifter-conn-list-' + @snifter_id
   end
 
-  def group_id
+  def group_list_id
     'snifter-conn-group-' + @snifter_id
+  end
+
+  def group_id(name)
+    group_id_prefix + name
+  end
+
+  def group_id_prefix
+    'snifter-conn-groups-' + @snifter_id + '-'
   end
 
   def update_list(id)

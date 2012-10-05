@@ -41,3 +41,7 @@ table.xmlbody tr th {
 table.compare tr.bottom td { 
   border-bottom: 1px solid #aaa;
 }
+
+.snifter-list {
+  float: right;
+}

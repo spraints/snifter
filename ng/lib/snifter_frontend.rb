@@ -16,6 +16,7 @@ end
 
 class SnifterFrontend < Sinatra::Base
   set :root, File.expand_path('..', File.dirname(__FILE__))
+  enable :method_override
 
   helpers do
     include Rack::Utils
@@ -45,20 +46,34 @@ class SnifterFrontend < Sinatra::Base
     erb :snifter, :locals => { :snifter => snifter }
   end
 
-  get '/:snifter_id/start' do
+  post '/:snifter_id/start' do
     $snifters[params[:snifter_id]].start!
-    redirect to('/')
+    redirect to(params[:return_to] || '/')
   end
 
-  get '/:snifter_id/stop' do
+  post '/:snifter_id/stop' do
     $snifters[params[:snifter_id]].stop!
-    redirect to('/')
+    redirect to(params[:return_to] || '/')
   end
 
   get '/:snifter_id/:sess' do
     snifter = $snifters[params[:snifter_id]]
     req, res = snifter.session(params[:sess])
     erb :session, :locals => { :req => req, :res => res }, :layout => false
+  end
+
+  delete '/:snifter_id/sessions' do
+    snifter = $snifters[params[:snifter_id]]
+    snifter.clear!
+    redirect to("/#{snifter.id}")
+  end
+
+  post '/:snifter_id/session' do
+    snifter = $snifters[params[:snifter_id]]
+    name = params[:session_name] || 'ls /svn'
+    sessions = params[:sessions]
+    snifter.save_group(name, sessions)
+    redirect to("/#{snifter.id}")
   end
 
   #post '/:snifter_id/session' do

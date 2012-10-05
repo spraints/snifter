@@ -1,5 +1,5 @@
 <% if snifter.running? %>
-  (RUNNING[<%= snifter.pid %>]; <a href="/<%= snifter.id %>/stop">stop</a>)
+  (RUNNING[<%= snifter.pid %>]; <a href="/<%= snifter.id %>/stop" data-method="post">stop</a>)
 <% else %>
-  (<a href="/<%= snifter.id %>/start">run</a>; STOPPED)
+  (<a href="/<%= snifter.id %>/start" data-method="post">start</a>; STOPPED)
 <% end %>

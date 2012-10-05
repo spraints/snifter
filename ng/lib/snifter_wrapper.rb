@@ -14,16 +14,39 @@ class SnifterWrapper
   attr_reader :redis, :id
 
   def sessions
+    groups = Hash.new { |h,k| h[k] = [] }
+    _snifter.groups.each do |group|
+      _snifter.get_group(group).each do |sess|
+        groups[sess] << group
+      end
+    end
     _snifter.current.map { |sess|
       req, res, time = _snifter.session(sess)
       req = get_line(req)
       res = get_line(res)
-      [sess, req, res, time]
+      [sess, req, res, time, groups[sess]]
     }
   end
 
   def session sess
     _snifter.session(sess).take(2).map { |o| process_http(o) }
+  end
+
+  def clear_sessions
+    _snifter.clear_sessions
+  end
+
+  def save_group(*args)
+    _snifter.save_group(*args)
+  end
+
+  def clear_groups
+    _snifter.clear_groups
+  end
+
+  def clear!
+    clear_sessions
+    clear_groups
   end
 
   def upstream     ; read 'upstream'     ; end
@@ -63,8 +86,8 @@ class SnifterWrapper
   end
 
   def destroy!
+    clear!
     stop!
-    # todo -- wipe other data
   end
 
   def self.for_pid redis, pid
