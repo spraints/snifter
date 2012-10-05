@@ -16,6 +16,10 @@ class SnifterFrontend < Sinatra::Base
   helpers do
     include Rack::Utils
     alias_method :h, :escape_html
+
+    def snifter
+      $snifters[params[:snifter_id]]
+    end
   end
 
   get '/' do
@@ -37,34 +41,36 @@ class SnifterFrontend < Sinatra::Base
   end
 
   get '/:snifter_id' do
-    snifter = $snifters[params[:snifter_id]]
     erb :snifter, :locals => { :snifter => snifter }
   end
 
   post '/:snifter_id/start' do
-    $snifters[params[:snifter_id]].start!
+    snifter.start!
     redirect to(params[:return_to] || '/')
   end
 
   post '/:snifter_id/stop' do
-    $snifters[params[:snifter_id]].stop!
+    snifter.stop!
     redirect to(params[:return_to] || '/')
   end
 
   get '/:snifter_id/:sess' do
-    snifter = $snifters[params[:snifter_id]]
     req, res = snifter.session(params[:sess])
     erb :session, :locals => { :req => req, :res => res }, :layout => false
   end
 
+  get '/:snifter_id/:sess/raw' do
+    req, res = snifter.raw_session(params[:sess])
+    content_type :text
+    req + "\r\n\r\n######## response ########\r\n\r\n" + res
+  end
+
   delete '/:snifter_id/sessions' do
-    snifter = $snifters[params[:snifter_id]]
     snifter.clear!
     redirect to("/#{snifter.id}")
   end
 
   post '/:snifter_id/session' do
-    snifter = $snifters[params[:snifter_id]]
     name = params[:session_name] || 'ls /svn'
     sessions = params[:sessions]
     snifter.save_group(name, sessions)

@@ -32,6 +32,10 @@ class SnifterWrapper
     _snifter.session(sess).take(2).map { |o| process_http(o) }
   end
 
+  def raw_session sess
+    _snifter.session(sess).take(2)
+  end
+
   def clear!
     clear_sessions
     clear_groups

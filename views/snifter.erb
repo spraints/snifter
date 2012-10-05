@@ -15,7 +15,9 @@
       <% last_time = time %>
       <tr>
         <td nowrap><input class="check" name="sessions[]" value="<%= sess %>" type="checkbox"/></td>
-        <td nowrap><a class="session" href="#" rel="/<%= snifter.id %>/<%= sess %>"><%= req %></a><br/>
+        <td nowrap><a class="session" href="#" rel="/<%= snifter.id %>/<%= sess %>"><%= req %></a>
+          <a href="/<%= snifter.id %>/<%= sess %>/raw" target="raw_snifter">raw</a>
+          <br/>
           <% groups.each do |group| %> <span class="group"><%= group %></span><% end %></td>
         <td nowrap><%= res %></td>
       </tr>
