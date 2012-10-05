@@ -17,6 +17,8 @@ $(function() {
   $('body').delegate('.session', 'click', function(e) {
     e.preventDefault();
     $('#results').load($(this).attr('href'));
+    $('.current_session').removeClass('current_session');
+    $(this).closest('td').addClass('current_session');
   });
 
   $('body').delegate('a[href][data-method]', 'click', function(e) {
