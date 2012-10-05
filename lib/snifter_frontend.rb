@@ -62,7 +62,7 @@ class SnifterFrontend < Sinatra::Base
   get '/:snifter_id/:sess/raw' do
     req, res = snifter.raw_session(params[:sess])
     content_type :text
-    req + "\r\n\r\n######## response ########\r\n\r\n" + res
+    req.to_s + "\r\n\r\n######## response ########\r\n\r\n" + res.to_s
   end
 
   delete '/:snifter_id/sessions' do
