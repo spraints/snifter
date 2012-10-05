@@ -32,18 +32,6 @@ class SnifterWrapper
     _snifter.session(sess).take(2).map { |o| process_http(o) }
   end
 
-  def clear_sessions
-    _snifter.clear_sessions
-  end
-
-  def save_group(*args)
-    _snifter.save_group(*args)
-  end
-
-  def clear_groups
-    _snifter.clear_groups
-  end
-
   def clear!
     clear_sessions
     clear_groups
@@ -101,6 +89,14 @@ class SnifterWrapper
 
   def running?
     !pid.nil?
+  end
+
+  def method_missing(*a)
+    _snifter.send(*a)
+  end
+
+  def respond_to?(m)
+    super || _snifter.respond_to?(m)
   end
 
   private

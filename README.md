@@ -14,6 +14,11 @@ highlighted XML.
 
 ![screenshot](http://img.skitch.com/20100427-j724ebpkt73ere62pb4usayi43.jpg)
 
+Use
+===============
+
+Setup by running `bundle`. Start by running `script/server`. View at http://localhost:4545/.
+
 ToDo
 ================
 

@@ -1,11 +1,6 @@
 require 'sinatra/base'
-require 'redis'
-require 'snifter_collection'
 
-ENV['REDIS_URL'] ||= 'redis://localhost:16379'
-
-$redis = Redis.new
-$snifters = SnifterCollection.new $redis
+require 'snifter_globals'
 
 trap('CLD') do
   if pid = Process.wait(-1, Process::WNOHANG)

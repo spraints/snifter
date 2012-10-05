@@ -59,11 +59,12 @@ class Snifter
   end
 
   def clear_sessions
-    while session = @redis.lpop(list_id)
-      @redis.del session + 'request'
-      @redis.del session + 'response'
-      @redis.del session + 'time'
+    current.each do |conn|
+      @redis.del conn + 'request'
+      @redis.del conn + 'response'
+      @redis.del conn + 'time'
     end
+    @redis.ltrim list_id, -1, -1
     true
   end
 
