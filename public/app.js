@@ -15,7 +15,8 @@ $(function() {
   });
 
   $('body').delegate('.session', 'click', function(e) {
-    $('#results').load($(this).attr('rel'));
+    e.preventDefault();
+    $('#results').load($(this).attr('href'));
   });
 
   $('body').delegate('a[href][data-method]', 'click', function(e) {
