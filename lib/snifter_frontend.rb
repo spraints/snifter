@@ -1,4 +1,5 @@
 require 'sinatra/base'
+require 'socket'
 
 require 'snifter_globals'
 
@@ -65,6 +66,11 @@ class SnifterFrontend < Sinatra::Base
     req.to_s + "\r\n\r\n######## response ########\r\n\r\n" + res.to_s
   end
 
+  get '/:snifter_id/:sess/tweak' do
+    req = snifter.raw_session(params[:sess]).first
+    erb :tweak, :locals => { :req => req, :host => "127.0.0.1:#{snifter.port}" }, :layout => false
+  end
+
   delete '/:snifter_id/sessions' do
     snifter.clear!
     redirect to("/#{snifter.id}")
@@ -75,6 +81,23 @@ class SnifterFrontend < Sinatra::Base
     sessions = params[:sessions]
     snifter.save_group(name, sessions)
     redirect to("/#{snifter.id}")
+  end
+
+  post '/custom_request' do
+    response = run_request :host => params[:host], :raw_request => params[:request]
+    "<pre>" + h(response) + "</pre>"
+  end
+
+  def run_request opts
+    host, raw_request = opts[:host], opts[:raw_request]
+    hostname, port = host.split(/:/)
+    p [hostname, port]
+    socket = TCPSocket.new hostname, port
+    p raw_request
+    socket.write raw_request
+    socket.read.tap { |x| puts x }
+  ensure
+    socket && socket.close
   end
 
   #post '/:snifter_id/session' do

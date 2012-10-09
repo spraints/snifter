@@ -1,0 +1,7 @@
+<form action="/custom_request" method="post" class="tweaker">
+  <label for="host">Host</label>
+  <input  id="host" type="text" name="host" value="<%= host %>" />
+  <br/>
+  <textarea name="request"><%=h req %></textarea>
+  <input type="submit" value="View Response" />
+</form>

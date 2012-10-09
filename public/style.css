@@ -49,3 +49,33 @@ table.compare tr.bottom td {
 .snifter-list {
   float: right;
 }
+
+.tweaker-overlay {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: rgba(200, 200, 200, 0.5);
+  overflow-y: scroll;
+}
+.tweaker-container {
+  position: relative;
+  background: white;
+  border: solid 3px black;
+  width: 90%;
+  margin: 3em auto;
+}
+.tweaker-close {
+  position: absolute;
+  top: 3em;
+  right: 3em;
+}
+.tweaker-body textarea {
+  display: block;
+  width: 90%;
+  height: 10em;
+}
+
+.loading {
+  width: 3px;
+  font-size: xx-large;
+  margin: 1em auto;
+}
