@@ -1,5 +1,5 @@
 require 'sinatra/base'
-require 'socket'
+require 'net/http'
 
 require 'snifter_globals'
 
@@ -88,16 +88,38 @@ class SnifterFrontend < Sinatra::Base
     "<pre>" + h(response) + "</pre>"
   end
 
+  class RawRequest < Net::HTTPGenericRequest
+    def initialize(raw_request)
+      @raw_header, @raw_body = raw_request.split(/\r\n\r\n/)
+      @raw_header =~ /^(\w+)\s+(\S+)/
+      super($1, !@raw_body.nil?, true, $2, nil)
+      @body = @raw_body
+    end
+
+    def write_header(sock, ver, path)
+      sock.write @raw_header + "\r\n\r\n"
+    end
+  end
+
   def run_request opts
     host, raw_request = opts[:host], opts[:raw_request]
     hostname, port = host.split(/:/)
-    p [hostname, port]
-    socket = TCPSocket.new hostname, port
-    p raw_request
-    socket.write raw_request
-    socket.read.tap { |x| puts x }
-  ensure
-    socket && socket.close
+    http = Net::HTTP.new hostname, port
+    http.set_debug_output $stdout
+    http.start do
+      request = RawRequest.new raw_request
+      response = http.request request
+      back_to_raw response
+    end
+  end
+
+  def back_to_raw response
+    [
+      "HTTP/#{response.http_version} #{response.code} #{response.msg}",
+      response.each_capitalized_name.each_with_object([]) { |k,a| response.get_fields(k).each { |v| a << "#{k}: #{v}" } },
+      '',
+      response.body
+    ].flatten.join("\r\n")
   end
 
   #post '/:snifter_id/session' do
