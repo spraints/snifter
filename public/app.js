@@ -50,9 +50,10 @@ $(function() {
     e.preventDefault();
     var loading = $(loading_html);
     function complete(responseText, textStatus, xhr) {
-      if(textStatus == "error")
+      if(textStatus == "error") {
         loading.removeClass('loading').text("Oops!! I couldn't run that request!");
-      console.log(["tweaked request result", textStatus, responseText]);
+        console.log(["tweaked request result", textStatus, responseText]);
+      }
     };
     $('.tweaker-response').append(loading).load($(this).attr('action'), $(this).serializeArray(), complete);
   });
