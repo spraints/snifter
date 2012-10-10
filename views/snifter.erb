@@ -1,8 +1,9 @@
 <h1><%= snifter.id %></h1>
 
-<table>
-  <tr><td valign="top">
-      <h1>Sessions</h1>
+<div class="snifter">
+  <div class="session-list">
+    <h1>Sessions</h1>
+
     <form action="/<%= snifter.id %>/session" method="post">
     <input type="textbox" name="session_name">
     <input id="create_session" type="submit" value="Save Session">
@@ -29,8 +30,9 @@
       <input type="hidden" name="_method" value="delete" />
       <input type="submit" value="Clear" />
     </form>
-  </td><td valign="top">
+  </div>
+  <div class="result-pane">
     <h1>Results</h1>
     <div id="results"></div>
-  </td></tr>
-</table>
+  </div>
+</div>
