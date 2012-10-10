@@ -88,6 +88,11 @@ table.compare tr.bottom td {
   right: 0;
 }
 
+.snifter > * {
+  /* So that scrolling doesn't leave stuff sitting right on the edge. */
+  padding-bottom: 2em;
+}
+
 .snifter > .session-list {
   position: absolute;
   top: 0;
