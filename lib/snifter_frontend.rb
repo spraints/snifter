@@ -62,8 +62,8 @@ class SnifterFrontend < Sinatra::Base
 
   get '/:snifter_id/:sess/raw' do
     req, res = snifter.raw_session(params[:sess])
-    content_type :text
-    req.to_s + "\r\n\r\n######## response ########\r\n\r\n" + res.to_s
+    '<pre>' + h(req.to_s + "\r\n\r\n######## response ########\r\n\r\n" + res.to_s) + '</pre>'
+
   end
 
   get '/:snifter_id/:sess/tweak' do
