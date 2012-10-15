@@ -10,6 +10,10 @@ trap('CLD') do
   end
 end
 
+$snifters.each do |snifter|
+  snifter.verify_pid!
+end
+
 class SnifterFrontend < Sinatra::Base
   set :root, File.expand_path('..', File.dirname(__FILE__))
   enable :method_override

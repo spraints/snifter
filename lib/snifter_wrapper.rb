@@ -91,6 +91,12 @@ class SnifterWrapper
     self.pid = nil
   end
 
+  def verify_pid!
+    running? and Process.getpgid(pid)
+  rescue Errno::ESRCH
+    self.pid = nil
+  end
+
   def running?
     !pid.nil?
   end
