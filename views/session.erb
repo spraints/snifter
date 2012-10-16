@@ -1,8 +1,8 @@
 <table cellspacing="0" cellpadding="0" class="headers">
   <% req[:headers].each do |k, v| %>
     <tr>
-      <th><%= k %></th>
-      <td><%= v %></td>
+      <th><%=h k %></th>
+      <td><%=h v %></td>
     </tr>
   <% end %>
 </table>
@@ -10,8 +10,8 @@
 <table cellspacing="0" cellpadding="0" class="xmlbody">
   <% req[:body_values].each do |k, v| %>
     <tr>
-      <th><%= k %></th>
-      <td><%= v %></td>
+      <th><%=h k %></th>
+      <td><%=h v %></td>
     </tr>
   <% end %>
 </table>
@@ -26,8 +26,8 @@
 <table cellspacing="0" cellpadding="0" class="headers">
   <% res[:headers].each do |k, v| %>
     <tr>
-      <th><%= k %></th>
-      <td><%= v %></td>
+      <th><%=h k %></th>
+      <td><%=h v %></td>
     </tr>
   <% end %>
 </table>
@@ -35,8 +35,8 @@
 <table cellspacing="0" cellpadding="0" class="xmlbody">
   <% res[:body_values].each do |k, v| %>
     <tr>
-      <th><%= k %></th>
-      <td><%= v %></td>
+      <th><%=h k %></th>
+      <td><%=h v %></td>
     </tr>
   <% end %>
 </table>
