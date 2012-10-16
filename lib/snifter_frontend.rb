@@ -45,6 +45,25 @@ class SnifterFrontend < Sinatra::Base
     redirect to('/')
   end
 
+  get '/compare' do
+    unless snifter_a = $snifters[params[:a]]
+      redirect to('/')
+    else
+      unless snifter_b = $snifters[params[:b]]
+        erb :choose_other, :locals => { :a => snifter_a, :choices_for_b => $snifters.reject { |snifter| snifter.id == snifter_a.id } }
+      else
+        erb :compare, :locals => { :a => snifter_a, :b => snifter_b }
+      end
+    end
+  end
+
+  get '/compare/session' do
+    [:a, :b].map { |side|
+      req, res = $snifters[params[side][:id]].session(params[side][:sess])
+      '<div class="comparison">' + erb(:session, :locals => { :req => req, :res => res }, :layout => false) + '</div>'
+    }.join('')
+  end
+
   get '/:snifter_id' do
     erb :snifter, :locals => { :snifter => snifter }
   end

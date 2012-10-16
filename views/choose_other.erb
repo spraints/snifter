@@ -1,0 +1,8 @@
+<div class="set-up-compare">
+  Compare <em><%= a.id %></em> to...
+  <ul>
+    <% choices_for_b.each do |b| %>
+      <li><a href="/compare?a=<%= a.id %>&b=<%= b.id %>"><%= b.id %></a></li>
+    <% end %>
+  </ul>
+</div>

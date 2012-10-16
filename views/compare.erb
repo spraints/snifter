@@ -1,0 +1,20 @@
+<div class="snifter comparison">
+  <div class="session-list">
+    <table>
+      <tr>
+        <th><%= a.id %></th>
+        <th><%= b.id %></th>
+      </tr>
+      <% a.sessions.zip(b.sessions).each do |(sess_a, req_a, res_a, time_a, groups_a), (sess_b, req_b, res_b, time_b, groups_b)| %>
+        <tr>
+          <% [req_a, req_b].each do |req| %>
+            <td nowrap><a class="session" href="/compare/session?a[id]=<%= a.id %>&a[sess]=<%= sess_a %>&b[id]=<%= b.id %>&b[sess]=<%= sess_b %>"><%= req %></a></td>
+          <% end %>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+  <div class="result-pane">
+    <div id="results"></div>
+  </div>
+</div>

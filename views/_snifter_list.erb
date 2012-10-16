@@ -4,6 +4,7 @@
     <% $snifters.each do |snifter| %>
       <li>
         <a href="/<%= snifter.id %>"><%=h snifter.id %> <%=h snifter.port %> -&gt; <%=h snifter.upstream %></a>
+        <a href="/compare?a=<%= snifter.id %>">start comparing</a>
         <%= erb :_snifter_status, :locals => { :snifter => snifter } %>
       </li>
     <% end %>

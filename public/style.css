@@ -102,11 +102,26 @@ table.compare tr.bottom td {
   overflow: scroll;
 }
 
+.snifter.comparison > .session-list {
+  width: 40%;
+}
+
 .snifter > .result-pane {
   position: absolute;
   top: 0;
   bottom: 0;
   right: 0;
   width: 50%;
+  overflow: scroll;
+}
+
+.snifter.comparison > .result-pane {
+  width: 60%;
+}
+
+.comparison .comparison {
+  width: 45%;
+  padding: 1%;
+  float: left;
   overflow: scroll;
 }
