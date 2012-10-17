@@ -21,6 +21,11 @@ $(function() {
     $(this).closest('tr').addClass('current_session');
   });
 
+  $('body').delegate('.session-mode', 'click', function(e) {
+    e.preventDefault();
+    $('#results').load(this.href);
+  });
+
   $('body').delegate('a[href][data-method]', 'click', function(e) {
     var method = $(this).data('method');
     if(method && method.toLowerCase() != 'get') {

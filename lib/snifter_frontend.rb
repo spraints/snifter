@@ -58,10 +58,20 @@ class SnifterFrontend < Sinatra::Base
   end
 
   get '/compare/session' do
-    [:a, :b].map { |side|
+    render =
+      case params[:only]
+      when 'resbody'
+        lambda { |locals| locals[:res][:body] }
+      else
+        lambda { |locals| erb(:session, :locals => locals, :layout => false) }
+      end
+    sessions = [:a, :b].map { |side|
       req, res = $snifters[params[side][:id]].session(params[side][:sess])
-      '<div class="comparison">' + erb(:session, :locals => { :req => req, :res => res }, :layout => false) + '</div>'
-    }.join('')
+      '<div class="comparison">' + render.call(:req => req, :res => res) + '</div>'
+    }
+    base_href = "/compare/session?a[id]=#{params[:a][:id]}&a[sess]=#{params[:a][:sess]}&b[id]=#{params[:b][:id]}&b[sess]=#{params[:b][:sess]}"
+    links = "<div><a class=\"session-mode\" href=\"#{base_href}\">all</a> <a class=\"session-mode\" href=\"#{base_href}&only=resbody\">response body only</a></div>"
+    links + sessions.join('')
   end
 
   get '/:snifter_id' do
