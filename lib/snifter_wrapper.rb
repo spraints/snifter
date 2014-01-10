@@ -133,11 +133,20 @@ class SnifterWrapper
   end
 
   def process_http(req)
+    req.force_encoding('ASCII-8BIT')
     header, xml = req.split("\r\n\r\n")
 
     headers = header.split("\r\n")
     http = headers.shift
     harr = headers.map { |h| h.split(': ') }
+
+    # Inflate the message body if it was gzipped
+    if harr.include?( ['Content-Encoding', 'gzip'] )
+      fh = StringIO.new(xml)
+      gz = Zlib::GzipReader.new(fh)
+      xml.replace(gz.read)
+      gz.close
+    end
 
     r = ""
     begin
